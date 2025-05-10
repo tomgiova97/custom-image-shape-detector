@@ -1,8 +1,7 @@
 import cv2
 import numpy as np
 
-
-class MultiShapeRecognizer:
+class MultiShapeDetector:
     def __init__(self, shape_images, detect_params):
 
         self.shape_images = shape_images
@@ -137,7 +136,7 @@ class MultiShapeRecognizer:
                 overlaps[i],
                 shape_sigm_params[0],
                 shape_sigm_params[1],
-                shape_sigm_params[2],
+                # shape_sigm_params[2],
             )
             if (
                 confidence >= shape_detect_params["detect_thresh"]
@@ -145,15 +144,9 @@ class MultiShapeRecognizer:
             ):
                 detection = (i, confidence)
         return detection
-
-    def sharp_sigmoid_func(self, x, x_0=0.5, front_sharp=20, back_sharp=50):
+    
+    def sharp_sigmoid_func(self, x, x_0=0.5, sharpness = 10):
         if x >= x_0:
-            return self.sigmoid(x, x_0, front_sharp)
+            return 1 +( x_0 - 1)*np.exp(- sharpness*(x - x_0))
         else:
-            return self.sigmoid(x, x_0, back_sharp)
-
-    def sigmoid(self, x, x_0, sharp):
-        sigmoid_value = (x_0 - 0.5) + 1 / (
-            (x_0 + 0.5) * (1 + np.exp(-sharp * (x - x_0)))
-        )
-        return np.clip(sigmoid_value, 0, 1)
+            return  x_0*np.exp(sharpness*(x - x_0))    
