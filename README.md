@@ -13,6 +13,8 @@ To run this Python project the required dependencies are Numpy and OpenCV
 ## Initializing the Shape Detector
 
 Similar to other deep learning-based object detectors like YOLO, this algorithm can detect multiple shapes simultaneously.
+The detector must be initialized, and then fed with one or more test pixel clusters. 
+A pixel cluster is a list with the (x, y) coordinates of an object present in the image.
 
 Suppose we want to detect both *persons* and *dogs* in an image. For each target shape, the detector must be initialized with:
 
@@ -28,7 +30,9 @@ Detection parameters must be provided as a dictionary in the following format:
     {
         "label": "person",
         "threshold": 0.75,
-        "sigm_params": (0.7, 10)
+        "sigm_params": (0.7, 10),
+        "rotations_enabled": False,
+        "reflections_enabled": False,
     }
 
 - label: A string identifier for the shape
@@ -36,6 +40,14 @@ Detection parameters must be provided as a dictionary in the following format:
 - threshold: The similarity threshold required for a detection
 
 - sigm_params: A tuple representing the parameters (center, steepness) of the modified sigmoid function, as described in the paper
+
+- rotations_enabled (beta): A boolean indicating if the detector should be invariant to rotation of the pixel cluster
+
+- reflections_enabled (beta): A boolean indicating if the detector should be invariant to vertical and horizontal reflections of the pixel cluster
+
+## Rotations and Reflection enabling (beta)
+
+This part has already been implemented but it is still in testing phase. To deactivate it, just set the properties "rotations_enabled" and "reflections_enabled" to "False" in the detector initialization dictionary.
 
 
 
@@ -50,6 +62,7 @@ This allows the detector to separate and analyze individual objects in the image
 After initializing the detector and extracting object regions, we can pass the segmented clusters to the detector using the compare method.
 
 This method compares each cluster against all registered shape templates.
+
 If the similarity with any shape exceeds its corresponding threshold, a detection is returned in the following format:
 
     {
